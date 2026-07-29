@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#09090b" />
+  <title>Concrete Reign — Production Calendar</title>
+  <style>
+    :root {
+      --bg: #070709;
+      --panel: rgba(20,20,24,.82);
+      --panel-2: rgba(30,30,36,.78);
+      --text: #f4f4f5;
+      --muted: #a1a1aa;
+      --border: rgba(255,255,255,.1);
+      --accent: #ff4d35;
+      --accent-2: #ffaf39;
+      --dev: #54a7ff;
+      --marketing: #ff4f8b;
+      --release: #ffb42a;
+      --community: #a277ff;
+      --business: #48d49d;
+      --danger: #ff5d5d;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% -10%, rgba(255,77,53,.22), transparent 28%),
+        radial-gradient(circle at 90% 8%, rgba(255,175,57,.12), transparent 25%),
+        linear-gradient(180deg, #09090b 0%, #050506 100%);
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .shell { width: min(1500px, calc(100% - 28px)); margin: 0 auto; padding: 22px 0 60px; }
+
+    .topbar {
+      position: sticky;
+      top: 12px;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: rgba(8,8,10,.82);
+      backdrop-filter: blur(22px);
+      box-shadow: var(--shadow);
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      letter-spacing: -1px;
+      color: #111;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      box-shadow: 0 8px 30px rgba(255,77,53,.28);
+    }
+    .brand h1 { margin: 0; font-size: 17px; letter-spacing: .02em; text-transform: uppercase; }
+    .brand p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+
+    .top-actions { display: flex; gap: 9px; flex-wrap: wrap; justify-content: flex-end; }
+
+    .btn {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 13px;
+      color: var(--text);
+      background: rgba(255,255,255,.045);
+      transition: .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); background: rgba(255,255,255,.085); }
+    .btn.primary { border-color: transparent; color: #111; font-weight: 800; background: linear-gradient(135deg, var(--accent-2), var(--accent)); }
+    .btn.danger { color: #ffd6d6; border-color: rgba(255,93,93,.28); }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.45fr .9fr;
+      gap: 18px;
+      margin: 24px 0 18px;
+    }
+
+    .hero-main, .release-card, .panel {
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(24,24,29,.88), rgba(12,12,15,.88));
+      box-shadow: var(--shadow);
+    }
+
+    .hero-main { padding: 30px; overflow: hidden; position: relative; }
+    .hero-main::after {
+      content: "";
+      position: absolute;
+      right: -70px;
+      bottom: -110px;
+      width: 330px;
+      height: 330px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,77,53,.27), transparent 65%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      color: var(--accent-2);
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .hero h2 {
+      max-width: 780px;
+      margin: 10px 0 12px;
+      font-size: clamp(36px, 6vw, 78px);
+      line-height: .93;
+      letter-spacing: -.055em;
+      text-transform: uppercase;
+    }
+
+    .hero-copy { max-width: 700px; color: #c7c7cf; line-height: 1.6; }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 20px; }
+
+    .badge {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 11px;
+      color: #d9d9df;
+      background: rgba(255,255,255,.045);
+      font-size: 12px;
+    }
+
+    .release-card { padding: 24px; display: flex; flex-direction: column; justify-content: space-between; }
+    .release-label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .13em; }
+    .release-date { margin-top: 8px; font-size: clamp(29px, 4vw, 50px); font-weight: 900; line-height: .95; }
+    .countdown { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-top: 22px; }
+    .count-box { padding: 12px 5px; text-align: center; border: 1px solid var(--border); border-radius: 14px; background: rgba(255,255,255,.035); }
+    .count-box strong { display: block; font-size: 23px; }
+    .count-box span { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; text-transform: uppercase; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .stat {
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(21,21,26,.75);
+    }
+    .stat span { color: var(--muted); font-size: 12px; }
+    .stat strong { display: block; margin-top: 8px; font-size: 27px; }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1.4fr repeat(3, minmax(140px,.55fr));
+      gap: 10px;
+      padding: 14px;
+      margin-bottom: 18px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(15,15,18,.76);
+    }
+
+    .control {
+      width: 100%;
+      min-width: 0;
+      color: var(--text);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.045);
+      border-radius: 12px;
+      padding: 11px 12px;
+      outline: none;
+    }
+    .control:focus { border-color: rgba(255,175,57,.65); box-shadow: 0 0 0 3px rgba(255,175,57,.12); }
+    select.control option { color: #111; }
+
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+    .tab.active { color: #111; font-weight: 800; background: var(--accent-2); border-color: transparent; }
+
+    .panel { padding: 18px; }
+    .panel-head { display: flex; align-items: end; justify-content: space-between; gap: 15px; margin-bottom: 14px; }
+    .panel-head h3 { margin: 0; font-size: 22px; }
+    .panel-head p { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+
+    .months { display: grid; gap: 16px; }
+    .month {
+      border: 1px solid var(--border);
+      border-radius: 19px;
+      overflow: hidden;
+      background: rgba(255,255,255,.022);
+    }
+    .month-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      align-items: center;
+      padding: 14px 16px;
+      background: rgba(255,255,255,.035);
+      border-bottom: 1px solid var(--border);
+    }
+    .month-head h4 { margin: 0; font-size: 17px; }
+    .month-head span { color: var(--muted); font-size: 12px; }
+
+    .event-list { display: grid; }
+    .event {
+      display: grid;
+      grid-template-columns: 76px minmax(0,1fr) 135px 125px 46px;
+      gap: 12px;
+      align-items: center;
+      padding: 13px 15px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      transition: background .16s ease;
+    }
+    .event:last-child { border-bottom: 0; }
+    .event:hover { background: rgba(255,255,255,.025); }
+    .event.completed { opacity: .58; }
+    .event.completed .event-title { text-decoration: line-through; }
+
+    .date-chip {
+      text-align: center;
+      padding: 8px 5px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.035);
+    }
+    .date-chip strong { display: block; font-size: 20px; }
+    .date-chip span { color: var(--muted); font-size: 10px; text-transform: uppercase; }
+
+    .event-title { font-weight: 750; }
+    .event-desc { margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+
+    .category {
+      justify-self: start;
+      padding: 7px 9px;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .category.development { color: var(--dev); background: rgba(84,167,255,.08); }
+    .category.marketing { color: var(--marketing); background: rgba(255,79,139,.08); }
+    .category.release { color: var(--release); background: rgba(255,180,42,.08); }
+    .category.community { color: var(--community); background: rgba(162,119,255,.08); }
+    .category.business { color: var(--business); background: rgba(72,212,157,.08); }
+
+    .status-select { padding: 8px 9px; font-size: 12px; }
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      color: var(--muted);
+      background: rgba(255,255,255,.035);
+    }
+
+    .roadmap { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+    .phase {
+      padding: 17px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(255,255,255,.025);
+    }
+    .phase-index { color: var(--accent-2); font-size: 12px; font-weight: 900; letter-spacing: .1em; }
+    .phase h4 { margin: 8px 0 6px; }
+    .phase p { color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .progress { height: 9px; overflow: hidden; border-radius: 999px; background: rgba(255,255,255,.08); margin-top: 13px; }
+    .progress span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--accent-2), var(--accent)); }
+
+    .empty { padding: 30px; text-align: center; color: var(--muted); }
+
+    dialog {
+      width: min(620px, calc(100% - 24px));
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      color: var(--text);
+      background: #111116;
+      box-shadow: 0 35px 100px rgba(0,0,0,.65);
+    }
+    dialog::backdrop { background: rgba(0,0,0,.72); backdrop-filter: blur(5px); }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .modal-head h3 { margin: 0; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { display: block; margin-bottom: 6px; color: #d4d4da; font-size: 12px; }
+    textarea.control { min-height: 100px; resize: vertical; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 18px; }
+
+    footer { color: var(--muted); text-align: center; font-size: 12px; padding: 25px 0 0; }
+
+    @media (max-width: 980px) {
+      .hero { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2,1fr); }
+      .toolbar { grid-template-columns: 1fr 1fr; }
+      .roadmap { grid-template-columns: repeat(2,1fr); }
+      .event { grid-template-columns: 70px minmax(0,1fr) 120px; }
+      .event .status-select { grid-column: 2; }
+      .event .icon-btn { grid-column: 3; grid-row: 1 / span 2; }
+    }
+
+    @media (max-width: 640px) {
+      .shell { width: min(100% - 18px, 1500px); }
+      .topbar { position: static; align-items: flex-start; flex-direction: column; }
+      .top-actions { width: 100%; }
+      .top-actions .btn { flex: 1; }
+      .hero-main, .release-card, .panel { border-radius: 18px; }
+      .hero-main { padding: 22px; }
+      .countdown { grid-template-columns: repeat(2,1fr); }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .toolbar { grid-template-columns: 1fr; }
+      .roadmap { grid-template-columns: 1fr; }
+      .event {
+        grid-template-columns: 62px minmax(0,1fr);
+        align-items: start;
+      }
+      .event .category, .event .status-select { grid-column: 2; }
+      .event .icon-btn { grid-column: 1; grid-row: 2 / span 2; width: 100%; }
+      .form-grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">CR</div>
+        <div>
+          <h1>Concrete Reign</h1>
+          <p>Production, beta and marketing command calendar</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="btn" id="exportBtn">Export Plan</button>
+        <button class="btn primary" id="addBtn">+ Add Event</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-main">
+        <div class="eyebrow">Official launch roadmap</div>
+        <h2>Build the city.<br>Build the hype.</h2>
+        <p class="hero-copy">
+          A complete production plan from development and closed testing through trailers,
+          pre-orders, open beta, launch week and post-launch support.
+        </p>
+        <div class="hero-badges">
+          <span class="badge">Development: 2026–2027</span>
+          <span class="badge">Pre-orders: March 23, 2027</span>
+          <span class="badge">Release: June 17, 2027</span>
+          <span class="badge">Platforms: PC roadmap first</span>
+        </div>
+      </div>
+
+      <aside class="release-card">
+        <div>
+          <div class="release-label">Worldwide Release</div>
+          <div class="release-date">17 JUNE<br>2027</div>
+        </div>
+        <div class="countdown" id="countdown">
+          <div class="count-box"><strong id="days">0</strong><span>Days</span></div>
+          <div class="count-box"><strong id="hours">0</strong><span>Hours</span></div>
+          <div class="count-box"><strong id="minutes">0</strong><span>Minutes</span></div>
+          <div class="count-box"><strong id="seconds">0</strong><span>Seconds</span></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="stats">
+      <div class="stat"><span>Total milestones</span><strong id="totalStat">0</strong></div>
+      <div class="stat"><span>Completed</span><strong id="completeStat">0</strong></div>
+      <div class="stat"><span>Next milestone</span><strong id="nextStat">—</strong></div>
+      <div class="stat"><span>Overall progress</span><strong id="progressStat">0%</strong></div>
+    </section>
+
+    <section class="toolbar">
+      <input class="control" id="search" type="search" placeholder="Search milestones, trailers, beta releases..." />
+      <select class="control" id="yearFilter">
+        <option value="all">All years</option>
+        <option value="2026">2026</option>
+        <option value="2027">2027</option>
+      </select>
+      <select class="control" id="categoryFilter">
+        <option value="all">All categories</option>
+        <option value="development">Development</option>
+        <option value="marketing">Marketing</option>
+        <option value="community">Community</option>
+        <option value="business">Business</option>
+        <option value="release">Release</option>
+      </select>
+      <select class="control" id="statusFilter">
+        <option value="all">All statuses</option>
+        <option value="planned">Planned</option>
+        <option value="in-progress">In progress</option>
+        <option value="complete">Complete</option>
+        <option value="delayed">Delayed</option>
+      </select>
+    </section>
+
+    <div class="tabs">
+      <button class="btn tab active" data-view="calendar">Calendar</button>
+      <button class="btn tab" data-view="roadmap">Roadmap</button>
+    </div>
+
+    <main>
+      <section class="panel" id="calendarView">
+        <div class="panel-head">
+          <div>
+            <h3>Master Calendar</h3>
+            <p>Use the filters, update statuses and add your own events.</p>
+          </div>
+        </div>
+        <div class="months" id="months"></div>
+      </section>
+
+      <section class="panel" id="roadmapView" hidden>
+        <div class="panel-head">
+          <div>
+            <h3>Release Roadmap</h3>
+            <p>The four main stages leading to launch.</p>
+          </div>
+        </div>
+        <div class="roadmap">
+          <article class="phase">
+            <div class="phase-index">PHASE 01</div>
+            <h4>Foundation</h4>
+            <p>Core city, driving, missions, interiors, NPC systems and visual identity.</p>
+            <div class="progress"><span style="width:38%"></span></div>
+          </article>
+          <article class="phase">
+            <div class="phase-index">PHASE 02</div>
+            <h4>Playable Betas</h4>
+            <p>Private tests, creator testing, public beta and performance optimisation.</p>
+            <div class="progress"><span style="width:20%"></span></div>
+          </article>
+          <article class="phase">
+            <div class="phase-index">PHASE 03</div>
+            <h4>Marketing Rollout</h4>
+            <p>Reveal campaign, trailers, gameplay, pre-orders, press and launch countdown.</p>
+            <div class="progress"><span style="width:12%"></span></div>
+          </article>
+          <article class="phase">
+            <div class="phase-index">PHASE 04</div>
+            <h4>Launch & Live</h4>
+            <p>Gold master, release week support, patches and the first content roadmap.</p>
+            <div class="progress"><span style="width:0%"></span></div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>Concrete Reign internal production calendar • Release target: June 17, 2027</footer>
+  </div>
+
+  <dialog id="eventDialog">
+    <div class="modal-head">
+      <h3>Add Calendar Event</h3>
+      <button class="icon-btn" id="closeDialog" aria-label="Close">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="field">
+        <label for="eventDate">Date</label>
+        <input class="control" id="eventDate" type="date" />
+      </div>
+      <div class="field">
+        <label for="eventCategory">Category</label>
+        <select class="control" id="eventCategory">
+          <option value="development">Development</option>
+          <option value="marketing">Marketing</option>
+          <option value="community">Community</option>
+          <option value="business">Business</option>
+          <option value="release">Release</option>
+        </select>
+      </div>
+      <div class="field full">
+        <label for="eventTitle">Title</label>
+        <input class="control" id="eventTitle" placeholder="Example: Gameplay Trailer 2" />
+      </div>
+      <div class="field full">
+        <label for="eventDescription">Description</label>
+        <textarea class="control" id="eventDescription" placeholder="What needs to happen?"></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="cancelDialog">Cancel</button>
+      <button class="btn primary" id="saveEvent">Save Event</button>
+    </div>
+  </dialog>
+
+  <script>
+    const releaseDate = new Date("2027-06-17T00:00:00");
+
+    const defaultEvents = [
+      {date:"2026-08-07", title:"Production roadmap locked", desc:"Confirm game pillars, districts, mission count, systems and the full 2026–27 schedule.", category:"development", status:"planned"},
+      {date:"2026-08-21", title:"City block-out milestone", desc:"Finish the first complete city layout with roads, hills, tunnels and district boundaries.", category:"development", status:"planned"},
+      {date:"2026-09-04", title:"Core driving overhaul", desc:"Improve vehicle handling, third-person camera, traffic behaviour and road navigation.", category:"development", status:"planned"},
+      {date:"2026-09-18", title:"NPC and pedestrian update", desc:"Add safer pathfinding, reactions, routines and improved crowd density.", category:"development", status:"planned"},
+      {date:"2026-10-02", title:"Interior systems milestone", desc:"Complete shop entry, exits, upstairs spaces and interior interaction framework.", category:"development", status:"planned"},
+      {date:"2026-10-16", title:"Mission framework beta", desc:"Lock objective tracking, checkpoints, dialogue, markers and fail/retry states.", category:"development", status:"planned"},
+      {date:"2026-10-30", title:"Halloween developer screenshot", desc:"Post one atmospheric city image without revealing major story details.", category:"marketing", status:"planned"},
+      {date:"2026-11-13", title:"Closed Alpha 1", desc:"Small private test focused on movement, driving, basic missions and crashes.", category:"development", status:"planned"},
+      {date:"2026-11-20", title:"Alpha feedback review", desc:"Prioritise critical bugs and publish the internal Alpha 1 action list.", category:"development", status:"planned"},
+      {date:"2026-12-04", title:"Concrete Reign logo reveal", desc:"Release the final game logo and refreshed social branding.", category:"marketing", status:"planned"},
+      {date:"2026-12-18", title:"Winter development update", desc:"Share a short end-of-year post showing city progress and 2027 plans.", category:"community", status:"planned"},
+
+      {date:"2027-01-08", title:"Closed Alpha 2", desc:"Test police, phone, mission flow, vehicle damage and enterable buildings.", category:"development", status:"planned"},
+      {date:"2027-01-22", title:"Performance optimisation sprint", desc:"Improve low-end mode, loading, memory use and frame pacing.", category:"development", status:"planned"},
+      {date:"2027-02-05", title:"Story trailer edit locked", desc:"Finish music, voice-over, captions, ratings cards and platform end card.", category:"marketing", status:"planned"},
+      {date:"2027-02-12", title:"Press and creator list locked", desc:"Finalise the first wave of press, creators and community partners.", category:"business", status:"planned"},
+      {date:"2027-02-19", title:"Website launch update", desc:"Publish the full official game site with wishlist, screenshots, FAQ and release date.", category:"marketing", status:"planned"},
+      {date:"2027-02-26", title:"Release date teaser", desc:"Begin the countdown campaign without showing the complete trailer.", category:"marketing", status:"planned"},
+
+      {date:"2027-03-02", title:"Official Story Trailer", desc:"Reveal the story, lead characters, city tone and worldwide release date.", category:"marketing", status:"planned"},
+      {date:"2027-03-05", title:"Trailer reaction campaign", desc:"Share clips, creator reactions, character cards and high-quality screenshots.", category:"community", status:"planned"},
+      {date:"2027-03-09", title:"Character spotlight: Lead 1", desc:"Introduce the first playable lead with biography, art and a short video.", category:"marketing", status:"planned"},
+      {date:"2027-03-12", title:"World and districts feature", desc:"Reveal neighbourhoods, nightlife, business areas and city landmarks.", category:"marketing", status:"planned"},
+      {date:"2027-03-16", title:"Gameplay systems article", desc:"Explain driving, missions, police, interiors, phone and progression.", category:"community", status:"planned"},
+      {date:"2027-03-19", title:"Pre-order countdown starts", desc:"Begin daily countdown posts and publish edition information.", category:"marketing", status:"planned"},
+      {date:"2027-03-23", title:"PRE-ORDERS OPEN", desc:"Launch pre-orders, store pages, edition comparison and first purchase incentive.", category:"release", status:"planned"},
+      {date:"2027-03-24", title:"Pre-order FAQ and support", desc:"Answer platform, edition, refund, age rating and release questions.", category:"community", status:"planned"},
+      {date:"2027-03-30", title:"Gameplay Trailer 1", desc:"Show uncut gameplay sections covering driving, exploration and one mission.", category:"marketing", status:"planned"},
+
+      {date:"2027-04-02", title:"Closed Beta begins", desc:"Invite selected players to test progression, missions and technical stability.", category:"development", status:"planned"},
+      {date:"2027-04-09", title:"Closed Beta patch 1", desc:"Fix blockers, mission bugs, crashes and severe performance problems.", category:"development", status:"planned"},
+      {date:"2027-04-13", title:"Vehicles showcase", desc:"Reveal cars, bikes, customisation and driving environments.", category:"marketing", status:"planned"},
+      {date:"2027-04-20", title:"Music and radio feature", desc:"Introduce the soundtrack direction, radio presentation and city audio.", category:"marketing", status:"planned"},
+      {date:"2027-04-23", title:"Creator preview capture", desc:"Allow approved creators to record a controlled preview build.", category:"business", status:"planned"},
+      {date:"2027-04-27", title:"Gameplay Trailer 2", desc:"Focus on missions, police response, interiors, characters and city life.", category:"marketing", status:"planned"},
+
+      {date:"2027-05-04", title:"Open Beta announcement", desc:"Publish dates, requirements, platforms, rules and download instructions.", category:"marketing", status:"planned"},
+      {date:"2027-05-07", title:"Open Beta weekend", desc:"Large-scale public test for servers, crashes, performance and progression.", category:"development", status:"planned"},
+      {date:"2027-05-10", title:"Open Beta survey closes", desc:"Collect feedback and lock the final high-priority improvement list.", category:"community", status:"planned"},
+      {date:"2027-05-14", title:"Final optimisation sprint", desc:"Resolve release blockers and improve performance across supported hardware.", category:"development", status:"planned"},
+      {date:"2027-05-18", title:"PC requirements published", desc:"Release minimum and recommended specifications plus accessibility details.", category:"business", status:"planned"},
+      {date:"2027-05-21", title:"Launch trailer production lock", desc:"Final edit, legal checks, age-rating cards and distribution versions.", category:"marketing", status:"planned"},
+      {date:"2027-05-25", title:"Game goes gold target", desc:"Lock the release candidate and begin final platform/store certification.", category:"release", status:"planned"},
+      {date:"2027-05-28", title:"One month to launch campaign", desc:"Begin frequent clips, screenshots, character quotes and feature recaps.", category:"marketing", status:"planned"},
+
+      {date:"2027-06-01", title:"Launch month begins", desc:"Switch all official channels to launch branding and publish the June schedule.", category:"marketing", status:"planned"},
+      {date:"2027-06-03", title:"Accessibility and settings showcase", desc:"Show controls, subtitles, display options and low-end graphics mode.", category:"community", status:"planned"},
+      {date:"2027-06-07", title:"Review build distribution", desc:"Send the final approved build and review guide to press and selected creators.", category:"business", status:"planned"},
+      {date:"2027-06-10", title:"Launch Trailer", desc:"Release the final cinematic launch trailer across all channels.", category:"marketing", status:"planned"},
+      {date:"2027-06-12", title:"Launch week support drill", desc:"Test support responses, bug reporting, emergency patching and social coverage.", category:"development", status:"planned"},
+      {date:"2027-06-14", title:"Three-day countdown", desc:"Daily feature clips, launch times, preload information and community reminders.", category:"marketing", status:"planned"},
+      {date:"2027-06-16", title:"Global launch times post", desc:"Publish exact unlock times, known issues, support links and launch FAQ.", category:"release", status:"planned"},
+      {date:"2027-06-17", title:"CONCRETE REIGN RELEASE", desc:"Worldwide game launch, release stream, community posts and live support.", category:"release", status:"planned"},
+      {date:"2027-06-18", title:"Day-one health review", desc:"Review crashes, store feedback, support volume and urgent fixes.", category:"development", status:"planned"},
+      {date:"2027-06-22", title:"Patch 1 target", desc:"Release the first stability and progression patch if required.", category:"development", status:"planned"},
+      {date:"2027-06-24", title:"One-week community update", desc:"Thank players, publish early stats and explain the next fixes.", category:"community", status:"planned"},
+      {date:"2027-06-30", title:"July roadmap preview", desc:"Reveal the first post-launch updates, fixes and community events.", category:"community", status:"planned"}
+    ];
+
+    const stored = localStorage.getItem("concreteReignEvents");
+    let events = stored ? JSON.parse(stored) : defaultEvents.map((event, index) => ({...event, id:index + 1}));
+
+    const els = {
+      months: document.getElementById("months"),
+      search: document.getElementById("search"),
+      year: document.getElementById("yearFilter"),
+      category: document.getElementById("categoryFilter"),
+      status: document.getElementById("statusFilter"),
+      total: document.getElementById("totalStat"),
+      complete: document.getElementById("completeStat"),
+      next: document.getElementById("nextStat"),
+      progress: document.getElementById("progressStat"),
+      dialog: document.getElementById("eventDialog")
+    };
+
+    function save() {
+      localStorage.setItem("concreteReignEvents", JSON.stringify(events));
+    }
+
+    function niceMonth(date) {
+      return new Intl.DateTimeFormat("en-GB", {month:"long", year:"numeric"}).format(date);
+    }
+
+    function categoryName(value) {
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    }
+
+    function statusName(value) {
+      return {"planned":"Planned","in-progress":"In progress","complete":"Complete","delayed":"Delayed"}[value];
+    }
+
+    function getFilteredEvents() {
+      const query = els.search.value.trim().toLowerCase();
+      return events.filter(event => {
+        const matchesText = !query || `${event.title} ${event.desc}`.toLowerCase().includes(query);
+        const matchesYear = els.year.value === "all" || event.date.startsWith(els.year.value);
+        const matchesCategory = els.category.value === "all" || event.category === els.category.value;
+        const matchesStatus = els.status.value === "all" || event.status === els.status.value;
+        return matchesText && matchesYear && matchesCategory && matchesStatus;
+      }).sort((a,b) => a.date.localeCompare(b.date));
+    }
+
+    function render() {
+      const filtered = getFilteredEvents();
+      const groups = filtered.reduce((map, event) => {
+        const key = event.date.slice(0,7);
+        (map[key] ||= []).push(event);
+        return map;
+      }, {});
+
+      els.months.innerHTML = "";
+      if (!filtered.length) {
+        els.months.innerHTML = `<div class="empty">No calendar events match those filters.</div>`;
+      }
+
+      Object.entries(groups).forEach(([monthKey, monthEvents]) => {
+        const section = document.createElement("section");
+        section.className = "month";
+        const monthDate = new Date(`${monthKey}-01T12:00:00`);
+        section.innerHTML = `
+          <div class="month-head">
+            <h4>${niceMonth(monthDate)}</h4>
+            <span>${monthEvents.length} milestone${monthEvents.length === 1 ? "" : "s"}</span>
+          </div>
+          <div class="event-list"></div>
+        `;
+
+        const list = section.querySelector(".event-list");
+        monthEvents.forEach(event => {
+          const date = new Date(`${event.date}T12:00:00`);
+          const row = document.createElement("article");
+          row.className = `event ${event.status === "complete" ? "completed" : ""}`;
+          row.innerHTML = `
+            <div class="date-chip">
+              <strong>${date.getDate()}</strong>
+              <span>${new Intl.DateTimeFormat("en-GB",{weekday:"short"}).format(date)}</span>
+            </div>
+            <div>
+              <div class="event-title">${event.title}</div>
+              <div class="event-desc">${event.desc}</div>
+            </div>
+            <span class="category ${event.category}">${categoryName(event.category)}</span>
+            <select class="control status-select" aria-label="Update status">
+              ${["planned","in-progress","complete","delayed"].map(status =>
+                `<option value="${status}" ${event.status === status ? "selected" : ""}>${statusName(status)}</option>`
+              ).join("")}
+            </select>
+            <button class="icon-btn delete-btn" aria-label="Delete event">×</button>
+          `;
+          row.querySelector(".status-select").addEventListener("change", e => {
+            event.status = e.target.value;
+            save();
+            render();
+          });
+          row.querySelector(".delete-btn").addEventListener("click", () => {
+            if (confirm(`Delete "${event.title}"?`)) {
+              events = events.filter(item => item.id !== event.id);
+              save();
+              render();
+            }
+          });
+          list.appendChild(row);
+        });
+
+        els.months.appendChild(section);
+      });
+
+      renderStats();
+    }
+
+    function renderStats() {
+      const total = events.length;
+      const complete = events.filter(e => e.status === "complete").length;
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      const next = [...events]
+        .filter(e => new Date(`${e.date}T00:00:00`) >= today && e.status !== "complete")
+        .sort((a,b) => a.date.localeCompare(b.date))[0];
+
+      els.total.textContent = total;
+      els.complete.textContent = complete;
+      els.progress.textContent = total ? `${Math.round((complete / total) * 100)}%` : "0%";
+      els.next.textContent = next
+        ? new Intl.DateTimeFormat("en-GB",{day:"numeric",month:"short"}).format(new Date(`${next.date}T12:00:00`))
+        : "None";
+    }
+
+    function updateCountdown() {
+      const diff = releaseDate - new Date();
+      const safe = Math.max(0, diff);
+      document.getElementById("days").textContent = Math.floor(safe / 86400000);
+      document.getElementById("hours").textContent = Math.floor((safe / 3600000) % 24);
+      document.getElementById("minutes").textContent = Math.floor((safe / 60000) % 60);
+      document.getElementById("seconds").textContent = Math.floor((safe / 1000) % 60);
+    }
+
+    ["search","yearFilter","categoryFilter","statusFilter"].forEach(id => {
+      document.getElementById(id).addEventListener(id === "search" ? "input" : "change", render);
+    });
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        const isCalendar = tab.dataset.view === "calendar";
+        document.getElementById("calendarView").hidden = !isCalendar;
+        document.getElementById("roadmapView").hidden = isCalendar;
+      });
+    });
+
+    document.getElementById("addBtn").addEventListener("click", () => {
+      document.getElementById("eventDate").value = "";
+      document.getElementById("eventTitle").value = "";
+      document.getElementById("eventDescription").value = "";
+      els.dialog.showModal();
+    });
+
+    ["closeDialog","cancelDialog"].forEach(id => {
+      document.getElementById(id).addEventListener("click", () => els.dialog.close());
+    });
+
+    document.getElementById("saveEvent").addEventListener("click", () => {
+      const date = document.getElementById("eventDate").value;
+      const title = document.getElementById("eventTitle").value.trim();
+      const desc = document.getElementById("eventDescription").value.trim();
+      const category = document.getElementById("eventCategory").value;
+
+      if (!date || !title) {
+        alert("Please add a date and title.");
+        return;
+      }
+
+      events.push({
+        id: Date.now(),
+        date,
+        title,
+        desc: desc || "Custom calendar milestone.",
+        category,
+        status: "planned"
+      });
+      save();
+      els.dialog.close();
+      render();
+    });
+
+    document.getElementById("exportBtn").addEventListener("click", () => {
+      const data = JSON.stringify(events, null, 2);
+      const blob = new Blob([data], {type:"application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "concrete-reign-calendar.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+    render();
+  </script>
+</body>
+</html>
