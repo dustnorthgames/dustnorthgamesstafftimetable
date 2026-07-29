@@ -169,7 +169,7 @@
 
     .toolbar {
       display: grid;
-      grid-template-columns: 1.4fr repeat(3, minmax(140px,.55fr));
+      grid-template-columns: 1.4fr repeat(4, minmax(125px,.5fr));
       gap: 10px;
       padding: 14px;
       margin-bottom: 18px;
@@ -221,7 +221,7 @@
     .event-list { display: grid; }
     .event {
       display: grid;
-      grid-template-columns: 76px minmax(0,1fr) 135px 125px 46px;
+      grid-template-columns: 76px minmax(0,1fr) 118px 104px 125px 46px;
       gap: 12px;
       align-items: center;
       padding: 13px 15px;
@@ -304,6 +304,94 @@
     textarea.control { min-height: 100px; resize: vertical; }
     .modal-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 18px; }
 
+
+    .priority {
+      justify-self: start;
+      padding: 7px 9px;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .priority.critical { color: #ff6767; background: rgba(255,93,93,.12); }
+    .priority.high { color: #ffad54; background: rgba(255,173,84,.10); }
+    .priority.normal { color: #9fa6b2; background: rgba(159,166,178,.08); }
+    .priority.low { color: #62d4a4; background: rgba(98,212,164,.08); }
+
+    .readiness-layout {
+      display: grid;
+      grid-template-columns: .8fr 1.3fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .score-ring {
+      --score: 0;
+      width: min(270px, 78vw);
+      aspect-ratio: 1;
+      margin: 8px auto 18px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at center, #121218 0 57%, transparent 58%),
+        conic-gradient(var(--accent-2) calc(var(--score) * 1%), rgba(255,255,255,.08) 0);
+      box-shadow: inset 0 0 0 1px var(--border);
+    }
+    .viz-callout { padding: 14px; border-radius: 14px; border: 1px solid rgba(255,175,57,.28); background: rgba(255,175,57,.07); color: #f2ddbd; line-height: 1.5; }
+    .score-ring strong { display: block; font-size: 55px; line-height: .9; text-align: center; }
+    .score-ring span { display: block; margin-top: 8px; color: var(--muted); text-align: center; font-size: 12px; }
+    .readiness-list { display: grid; gap: 10px; }
+    .readiness-row {
+      display: grid;
+      grid-template-columns: minmax(150px, 1fr) 1.4fr 52px;
+      gap: 12px;
+      align-items: center;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: rgba(255,255,255,.025);
+    }
+    .readiness-row label { font-weight: 700; }
+    .readiness-row input[type="range"] { width: 100%; accent-color: var(--accent); }
+    .readiness-value { text-align: right; font-weight: 800; }
+
+    .data-grid {
+      display: grid;
+      grid-template-columns: repeat(2,minmax(0,1fr));
+      gap: 14px;
+    }
+    .data-card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      background: rgba(255,255,255,.025);
+    }
+    .data-card h4 { margin: 0 0 5px; font-size: 17px; }
+    .data-meta { color: var(--muted); font-size: 12px; }
+    .data-copy { margin-top: 11px; color: #d5d5dc; line-height: 1.55; font-size: 13px; white-space: pre-wrap; }
+    .data-actions { display: flex; justify-content: flex-end; margin-top: 12px; }
+    .version-status {
+      display: inline-flex;
+      margin-top: 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 9px;
+      font-size: 11px;
+      color: var(--accent-2);
+      background: rgba(255,175,57,.07);
+    }
+
+    @media (max-width: 980px) {
+      .readiness-layout { grid-template-columns: 1fr; }
+      .data-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .readiness-row { grid-template-columns: 1fr; }
+      .readiness-value { text-align: left; }
+    }
+
     footer { color: var(--muted); text-align: center; font-size: 12px; padding: 25px 0 0; }
 
     @media (max-width: 980px) {
@@ -312,8 +400,8 @@
       .toolbar { grid-template-columns: 1fr 1fr; }
       .roadmap { grid-template-columns: repeat(2,1fr); }
       .event { grid-template-columns: 70px minmax(0,1fr) 120px; }
-      .event .status-select { grid-column: 2; }
-      .event .icon-btn { grid-column: 3; grid-row: 1 / span 2; }
+      .event .priority, .event .status-select { grid-column: 2; }
+      .event .icon-btn { grid-column: 3; grid-row: 1 / span 3; }
     }
 
     @media (max-width: 640px) {
@@ -331,8 +419,8 @@
         grid-template-columns: 62px minmax(0,1fr);
         align-items: start;
       }
-      .event .category, .event .status-select { grid-column: 2; }
-      .event .icon-btn { grid-column: 1; grid-row: 2 / span 2; width: 100%; }
+      .event .category, .event .priority, .event .status-select { grid-column: 2; }
+      .event .icon-btn { grid-column: 1; grid-row: 2 / span 3; width: 100%; }
       .form-grid { grid-template-columns: 1fr; }
       .field.full { grid-column: auto; }
     }
@@ -388,7 +476,7 @@
       <div class="stat"><span>Total milestones</span><strong id="totalStat">0</strong></div>
       <div class="stat"><span>Completed</span><strong id="completeStat">0</strong></div>
       <div class="stat"><span>Next milestone</span><strong id="nextStat">—</strong></div>
-      <div class="stat"><span>Overall progress</span><strong id="progressStat">0%</strong></div>
+      <div class="stat"><span>Release readiness</span><strong id="progressStat">0%</strong></div>
     </section>
 
     <section class="toolbar">
@@ -413,10 +501,20 @@
         <option value="complete">Complete</option>
         <option value="delayed">Delayed</option>
       </select>
+      <select class="control" id="priorityFilter">
+        <option value="all">All priorities</option>
+        <option value="critical">Critical</option>
+        <option value="high">High</option>
+        <option value="normal">Normal</option>
+        <option value="low">Low</option>
+      </select>
     </section>
 
     <div class="tabs">
       <button class="btn tab active" data-view="calendar">Calendar</button>
+      <button class="btn tab" data-view="readiness">Readiness</button>
+      <button class="btn tab" data-view="versions">Versions</button>
+      <button class="btn tab" data-view="updates">Dev Updates</button>
       <button class="btn tab" data-view="roadmap">Roadmap</button>
     </div>
 
@@ -429,6 +527,47 @@
           </div>
         </div>
         <div class="months" id="months"></div>
+      </section>
+
+
+      <section class="panel" id="readinessView" hidden>
+        <div class="panel-head">
+          <div>
+            <h3>Release Readiness Score</h3>
+            <p>Move each slider as the game gets closer to being launch-ready.</p>
+          </div>
+        </div>
+        <div class="readiness-layout">
+          <div>
+            <div class="score-ring" id="scoreRing">
+              <div><strong id="readinessScore">0%</strong><span>overall readiness</span></div>
+            </div>
+            <div class="viz-callout" id="readinessMessage">The project is still in early production.</div>
+          </div>
+          <div class="readiness-list" id="readinessList"></div>
+        </div>
+      </section>
+
+      <section class="panel" id="versionsView" hidden>
+        <div class="panel-head">
+          <div>
+            <h3>Game Versions</h3>
+            <p>Track Alpha, Beta, release candidate and live versions.</p>
+          </div>
+          <button class="btn primary" id="addVersionBtn">+ Add Version</button>
+        </div>
+        <div class="data-grid" id="versionsGrid"></div>
+      </section>
+
+      <section class="panel" id="updatesView" hidden>
+        <div class="panel-head">
+          <div>
+            <h3>Developer Updates</h3>
+            <p>Keep a dated record of changes, fixes and current work.</p>
+          </div>
+          <button class="btn primary" id="addUpdateBtn">+ Add Update</button>
+        </div>
+        <div class="data-grid" id="updatesGrid"></div>
       </section>
 
       <section class="panel" id="roadmapView" hidden>
@@ -490,6 +629,15 @@
           <option value="release">Release</option>
         </select>
       </div>
+      <div class="field">
+        <label for="eventPriority">Priority</label>
+        <select class="control" id="eventPriority">
+          <option value="critical">Critical</option>
+          <option value="high">High</option>
+          <option value="normal" selected>Normal</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
       <div class="field full">
         <label for="eventTitle">Title</label>
         <input class="control" id="eventTitle" placeholder="Example: Gameplay Trailer 2" />
@@ -503,6 +651,28 @@
       <button class="btn" id="cancelDialog">Cancel</button>
       <button class="btn primary" id="saveEvent">Save Event</button>
     </div>
+  </dialog>
+
+
+  <dialog id="versionDialog">
+    <div class="modal-head"><h3>Add Game Version</h3><button class="icon-btn dialog-close" data-dialog="versionDialog">×</button></div>
+    <div class="form-grid">
+      <div class="field"><label for="versionName">Version</label><input class="control" id="versionName" placeholder="Beta 0.8.0" /></div>
+      <div class="field"><label for="versionDate">Target date</label><input class="control" id="versionDate" type="date" /></div>
+      <div class="field"><label for="versionStatus">Status</label><select class="control" id="versionStatus"><option>Planned</option><option>In Development</option><option>Testing</option><option>Released</option></select></div>
+      <div class="field full"><label for="versionNotes">Changes and goals</label><textarea class="control" id="versionNotes" placeholder="Features, fixes and testing goals..."></textarea></div>
+    </div>
+    <div class="modal-actions"><button class="btn dialog-close" data-dialog="versionDialog">Cancel</button><button class="btn primary" id="saveVersion">Save Version</button></div>
+  </dialog>
+
+  <dialog id="updateDialog">
+    <div class="modal-head"><h3>Add Developer Update</h3><button class="icon-btn dialog-close" data-dialog="updateDialog">×</button></div>
+    <div class="form-grid">
+      <div class="field"><label for="updateDate">Date</label><input class="control" id="updateDate" type="date" /></div>
+      <div class="field"><label for="updateTitle">Update title</label><input class="control" id="updateTitle" placeholder="Weekly Development Update" /></div>
+      <div class="field full"><label for="updateBody">What changed?</label><textarea class="control" id="updateBody" placeholder="Added, fixed, improved and currently working on..."></textarea></div>
+    </div>
+    <div class="modal-actions"><button class="btn dialog-close" data-dialog="updateDialog">Cancel</button><button class="btn primary" id="saveUpdate">Save Update</button></div>
   </dialog>
 
   <script>
@@ -570,6 +740,37 @@
 
     const stored = localStorage.getItem("concreteReignEvents");
     let events = stored ? JSON.parse(stored) : defaultEvents.map((event, index) => ({...event, id:index + 1}));
+    events = events.map(event => ({
+      ...event,
+      priority: event.priority || (
+        event.category === "release" ? "critical" :
+        ["development","marketing"].includes(event.category) ? "high" : "normal"
+      )
+    }));
+
+    let readiness = JSON.parse(localStorage.getItem("concreteReignReadiness") || "null") || {
+      Core_Gameplay: 35,
+      City_and_Interiors: 28,
+      Missions_and_Story: 22,
+      Performance_and_Bugs: 18,
+      Audio_and_Music: 15,
+      Marketing: 10,
+      Store_and_Legal: 8,
+      Launch_Support: 5
+    };
+
+    let versions = JSON.parse(localStorage.getItem("concreteReignVersions") || "null") || [
+      {id:1,name:"Alpha 0.1",date:"2026-11-13",status:"Planned",notes:"Movement, driving, basic missions and crash testing."},
+      {id:2,name:"Alpha 0.2",date:"2027-01-08",status:"Planned",notes:"Police, phone, interiors, vehicle damage and mission flow."},
+      {id:3,name:"Closed Beta 0.7",date:"2027-04-02",status:"Planned",notes:"Progression, missions, balance and technical stability."},
+      {id:4,name:"Open Beta 0.9",date:"2027-05-07",status:"Planned",notes:"Large public performance and progression test."},
+      {id:5,name:"Release Candidate 1.0 RC",date:"2027-05-25",status:"Planned",notes:"Certification build and final release blocker testing."},
+      {id:6,name:"Concrete Reign 1.0",date:"2027-06-17",status:"Planned",notes:"Worldwide launch version."}
+    ];
+
+    let devUpdates = JSON.parse(localStorage.getItem("concreteReignDevUpdates") || "null") || [
+      {id:1,date:"2026-08-07",title:"Production roadmap begins",body:"The main development, beta, marketing and launch schedule has been established. Priority now moves to the city block-out and core driving systems."}
+    ];
 
     const els = {
       months: document.getElementById("months"),
@@ -577,6 +778,7 @@
       year: document.getElementById("yearFilter"),
       category: document.getElementById("categoryFilter"),
       status: document.getElementById("statusFilter"),
+      priority: document.getElementById("priorityFilter"),
       total: document.getElementById("totalStat"),
       complete: document.getElementById("completeStat"),
       next: document.getElementById("nextStat"),
@@ -586,6 +788,9 @@
 
     function save() {
       localStorage.setItem("concreteReignEvents", JSON.stringify(events));
+      localStorage.setItem("concreteReignReadiness", JSON.stringify(readiness));
+      localStorage.setItem("concreteReignVersions", JSON.stringify(versions));
+      localStorage.setItem("concreteReignDevUpdates", JSON.stringify(devUpdates));
     }
 
     function niceMonth(date) {
@@ -607,7 +812,8 @@
         const matchesYear = els.year.value === "all" || event.date.startsWith(els.year.value);
         const matchesCategory = els.category.value === "all" || event.category === els.category.value;
         const matchesStatus = els.status.value === "all" || event.status === els.status.value;
-        return matchesText && matchesYear && matchesCategory && matchesStatus;
+        const matchesPriority = els.priority.value === "all" || event.priority === els.priority.value;
+        return matchesText && matchesYear && matchesCategory && matchesStatus && matchesPriority;
       }).sort((a,b) => a.date.localeCompare(b.date));
     }
 
@@ -651,6 +857,7 @@
               <div class="event-desc">${event.desc}</div>
             </div>
             <span class="category ${event.category}">${categoryName(event.category)}</span>
+            <span class="priority ${event.priority}">${categoryName(event.priority)}</span>
             <select class="control status-select" aria-label="Update status">
               ${["planned","in-progress","complete","delayed"].map(status =>
                 `<option value="${status}" ${event.status === status ? "selected" : ""}>${statusName(status)}</option>`
@@ -690,10 +897,105 @@
 
       els.total.textContent = total;
       els.complete.textContent = complete;
-      els.progress.textContent = total ? `${Math.round((complete / total) * 100)}%` : "0%";
+      const readinessScore = getReadinessScore();
+      els.progress.textContent = `${readinessScore}%`;
       els.next.textContent = next
         ? new Intl.DateTimeFormat("en-GB",{day:"numeric",month:"short"}).format(new Date(`${next.date}T12:00:00`))
         : "None";
+    }
+
+
+    function getReadinessScore() {
+      const values = Object.values(readiness);
+      return values.length ? Math.round(values.reduce((a,b) => a + Number(b), 0) / values.length) : 0;
+    }
+
+    function renderReadiness() {
+      const list = document.getElementById("readinessList");
+      const labels = {
+        Core_Gameplay:"Core gameplay",
+        City_and_Interiors:"City and interiors",
+        Missions_and_Story:"Missions and story",
+        Performance_and_Bugs:"Performance and bugs",
+        Audio_and_Music:"Audio and music",
+        Marketing:"Marketing campaign",
+        Store_and_Legal:"Store and legal setup",
+        Launch_Support:"Launch support"
+      };
+      list.innerHTML = "";
+      Object.entries(readiness).forEach(([key,value]) => {
+        const row = document.createElement("div");
+        row.className = "readiness-row";
+        row.innerHTML = `
+          <label for="ready-${key}">${labels[key] || key.replaceAll("_"," ")}</label>
+          <input id="ready-${key}" type="range" min="0" max="100" value="${value}">
+          <div class="readiness-value">${value}%</div>
+        `;
+        const range = row.querySelector("input");
+        range.addEventListener("input", () => {
+          readiness[key] = Number(range.value);
+          row.querySelector(".readiness-value").textContent = `${range.value}%`;
+          save();
+          updateReadinessScore();
+          renderStats();
+        });
+        list.appendChild(row);
+      });
+      updateReadinessScore();
+    }
+
+    function updateReadinessScore() {
+      const score = getReadinessScore();
+      const ring = document.getElementById("scoreRing");
+      ring.style.setProperty("--score", score);
+      document.getElementById("readinessScore").textContent = `${score}%`;
+      const message = score < 25 ? "The project is still in early production."
+        : score < 50 ? "Core work is underway, but major systems still need development."
+        : score < 75 ? "The game is taking shape and moving toward full beta readiness."
+        : score < 90 ? "Launch preparation is strong, with final polish and testing remaining."
+        : "Concrete Reign is very close to launch-ready.";
+      document.getElementById("readinessMessage").textContent = message;
+    }
+
+    function renderVersions() {
+      const grid = document.getElementById("versionsGrid");
+      grid.innerHTML = "";
+      [...versions].sort((a,b) => a.date.localeCompare(b.date)).forEach(version => {
+        const card = document.createElement("article");
+        card.className = "data-card";
+        card.innerHTML = `
+          <h4>${version.name}</h4>
+          <div class="data-meta">${new Intl.DateTimeFormat("en-GB",{day:"numeric",month:"long",year:"numeric"}).format(new Date(version.date+"T12:00:00"))}</div>
+          <span class="version-status">${version.status}</span>
+          <div class="data-copy">${version.notes}</div>
+          <div class="data-actions"><button class="btn danger delete-version">Delete</button></div>
+        `;
+        card.querySelector(".delete-version").addEventListener("click", () => {
+          versions = versions.filter(v => v.id !== version.id);
+          save(); renderVersions();
+        });
+        grid.appendChild(card);
+      });
+    }
+
+    function renderUpdates() {
+      const grid = document.getElementById("updatesGrid");
+      grid.innerHTML = "";
+      [...devUpdates].sort((a,b) => b.date.localeCompare(a.date)).forEach(update => {
+        const card = document.createElement("article");
+        card.className = "data-card";
+        card.innerHTML = `
+          <h4>${update.title}</h4>
+          <div class="data-meta">${new Intl.DateTimeFormat("en-GB",{day:"numeric",month:"long",year:"numeric"}).format(new Date(update.date+"T12:00:00"))}</div>
+          <div class="data-copy">${update.body}</div>
+          <div class="data-actions"><button class="btn danger delete-update">Delete</button></div>
+        `;
+        card.querySelector(".delete-update").addEventListener("click", () => {
+          devUpdates = devUpdates.filter(u => u.id !== update.id);
+          save(); renderUpdates();
+        });
+        grid.appendChild(card);
+      });
     }
 
     function updateCountdown() {
@@ -705,7 +1007,7 @@
       document.getElementById("seconds").textContent = Math.floor((safe / 1000) % 60);
     }
 
-    ["search","yearFilter","categoryFilter","statusFilter"].forEach(id => {
+    ["search","yearFilter","categoryFilter","statusFilter","priorityFilter"].forEach(id => {
       document.getElementById(id).addEventListener(id === "search" ? "input" : "change", render);
     });
 
@@ -713,9 +1015,10 @@
       tab.addEventListener("click", () => {
         document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
         tab.classList.add("active");
-        const isCalendar = tab.dataset.view === "calendar";
-        document.getElementById("calendarView").hidden = !isCalendar;
-        document.getElementById("roadmapView").hidden = isCalendar;
+        const selected = tab.dataset.view;
+        ["calendar","readiness","versions","updates","roadmap"].forEach(view => {
+          document.getElementById(`${view}View`).hidden = selected !== view;
+        });
       });
     });
 
@@ -723,6 +1026,7 @@
       document.getElementById("eventDate").value = "";
       document.getElementById("eventTitle").value = "";
       document.getElementById("eventDescription").value = "";
+      document.getElementById("eventPriority").value = "normal";
       els.dialog.showModal();
     });
 
@@ -735,6 +1039,7 @@
       const title = document.getElementById("eventTitle").value.trim();
       const desc = document.getElementById("eventDescription").value.trim();
       const category = document.getElementById("eventCategory").value;
+      const priority = document.getElementById("eventPriority").value;
 
       if (!date || !title) {
         alert("Please add a date and title.");
@@ -747,11 +1052,51 @@
         title,
         desc: desc || "Custom calendar milestone.",
         category,
+        priority,
         status: "planned"
       });
       save();
       els.dialog.close();
       render();
+    });
+
+
+    document.getElementById("addVersionBtn").addEventListener("click", () => {
+      document.getElementById("versionName").value = "";
+      document.getElementById("versionDate").value = "";
+      document.getElementById("versionNotes").value = "";
+      document.getElementById("versionStatus").value = "Planned";
+      document.getElementById("versionDialog").showModal();
+    });
+
+    document.getElementById("addUpdateBtn").addEventListener("click", () => {
+      document.getElementById("updateDate").value = new Date().toISOString().slice(0,10);
+      document.getElementById("updateTitle").value = "";
+      document.getElementById("updateBody").value = "";
+      document.getElementById("updateDialog").showModal();
+    });
+
+    document.querySelectorAll(".dialog-close").forEach(button => {
+      button.addEventListener("click", () => document.getElementById(button.dataset.dialog).close());
+    });
+
+    document.getElementById("saveVersion").addEventListener("click", () => {
+      const name = document.getElementById("versionName").value.trim();
+      const date = document.getElementById("versionDate").value;
+      const status = document.getElementById("versionStatus").value;
+      const notes = document.getElementById("versionNotes").value.trim();
+      if (!name || !date) return alert("Please add a version name and target date.");
+      versions.push({id:Date.now(),name,date,status,notes:notes || "No version notes yet."});
+      save(); renderVersions(); document.getElementById("versionDialog").close();
+    });
+
+    document.getElementById("saveUpdate").addEventListener("click", () => {
+      const date = document.getElementById("updateDate").value;
+      const title = document.getElementById("updateTitle").value.trim();
+      const body = document.getElementById("updateBody").value.trim();
+      if (!date || !title || !body) return alert("Please complete the date, title and update.");
+      devUpdates.push({id:Date.now(),date,title,body});
+      save(); renderUpdates(); document.getElementById("updateDialog").close();
     });
 
     document.getElementById("exportBtn").addEventListener("click", () => {
@@ -768,6 +1113,9 @@
     updateCountdown();
     setInterval(updateCountdown, 1000);
     render();
+    renderReadiness();
+    renderVersions();
+    renderUpdates();
   </script>
 </body>
 </html>
